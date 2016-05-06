@@ -8,32 +8,33 @@ global Setslog setno F_bad
 setno = train_set_no;
 
 %NNGA definitions
-nonodes = Setslog.nonodes; % %maximum number of nodes
+nonodes = Setslog.nonodes;          %maximum number of nodes
 noinnodes = Setslog.noinnodes;
 nooutnodes = Setslog.nooutnodes;
-P_omit_max = 0.99; %After ranking max value for random generated P_omit
-P_omit_min = 0.3; %-''- min value
-P_node_xover = 0.8; %Prob with which a node is exchanged
-P_mutation = 0.2;   %Prob with which a connection mutates
-Mut_alfa = 0.7;     %Mutation parameter
-wlow = -5; %Lower bound for randomly generated weights w
-whigh = 5; %Upper bound for randomly generated weights w
+P_omit_max = 0.99;                  %After ranking max value for random generated P_omit
+P_omit_min = 0.3;                   %-''- min value
+P_node_xover = 0.8;                 %Probability with which a node is exchanged
+P_mutation = 0.2;                   %Probability with which a connection mutates
+Mut_alfa = 0.7;                     %Mutation parameter
+wlow = -5;                          %Lower bound for randomly generated weights w
+whigh = 5;                          %Upper bound for randomly generated weights w
 
 %PP definitions
-Prey_popsize = Setslog.Prey_popsize;                %Initial popsize
-no_Prey_preferred = Setslog.no_Prey_preferred;      %Desired popsize
-Predator_popsize = Setslog.Predator_popsize;
-no_new_Prey = Setslog.no_new_Prey;
-no_generations = Setslog.generations;
-P_move_prey = 0.3;
-%2D-lattice
+Prey_popsize = Setslog.Prey_popsize;                %Initial prey population size
+no_Prey_preferred = Setslog.no_Prey_preferred;      %Desired prey population size
+Predator_popsize = Setslog.Predator_popsize;        %Number of Predators
+no_new_Prey = Setslog.no_new_Prey;                  %Number of new prey introduced every KillInterval
+no_generations = Setslog.generations;               %Maximum number generations for evolution
+P_move_prey = 0.3;                                  %Probability of movement of prey
+%2D-lattice: Lattice Parameters
 no_x = Setslog.no_x;
 no_y = Setslog.no_y;
+
 KillInterval = Setslog.KillInterval;
 maxrank = Setslog.maxrank;
 
 P_omit_match = P_omit_min;
-F_bad = 1e6;        %fitness assigned to preys performing badly
+F_bad = 1e6;                                        %fitness assigned to preys performing badly
 
 %**************************************************
 %   INITIALIZATION
@@ -278,32 +279,4 @@ Setslog.dataset(setno).pareto.P = P;
 Setslog.dataset(setno).pareto.F1 = F1;
 Setslog.dataset(setno).pareto.F2 = F2;
 
-end
-%-------------------------------------------------
-% Evaluate F1 and F2
-%-------------------------------------------------
-function[F1 F2 UW IC] = EvalF1F2(Prey)
-global nonodes noinnodes F_bad
-
-for i = 1:length(Prey(:,1,1))
-    w = squeeze(Prey(i,:,:));
-
-    %{
-    for j = 1:nonodes
-        for k = 1:noinnodes+1
-            w(j,k) = Prey(i,j,k);
-        end
-    end
-    %}
-    [fval,W,InfoC] = NNevalnet(w);
-    F1(i) = fval;
-    if isnan(F1(i)) || isinf(F1(i))
-        F1(i) = F_bad+eps; F2(i) = F_bad+eps;
-    end
-    F2(i) = length(find(w(:,2:noinnodes+1))); %Does not include bias parameters!
-    UW(i).W = W;
-    IC(i) = InfoC;
-    %Should somehow be able to retrieve the different networks...
-end
-F1 = F1'; F2 = F2'; IC = IC'; UW = UW';
 end
