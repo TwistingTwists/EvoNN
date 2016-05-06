@@ -1,10 +1,11 @@
 function MovePrey(xpos, ypos, i)
 %-------------------------------------------------
 % Move Prey 
+% Wraps the lattice onto itself, forming a toroidal geometry
 %-------------------------------------------------
 %i      Prey to move
-%xpos   new position for Prey
-%ypos   -"-
+%xpos   new x position for Prey
+%ypos   new y position for Prey
 
 global lattice no_x no_y
 
