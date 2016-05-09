@@ -36,9 +36,9 @@ RandStream('mt19937ar','seed', sum(100*clock));
 Setslog = [];
 
 %% =====================Define input parameters=======================================
-%Data = 'DTLZ5.mat';         %Data file
-%in_index = [1;20]';               %independent variables column no.
-%out_index = 2;                %dependent variable column no.
+%Data = 'DTLZ5.mat';                %Data file
+%in_index = [1;20]';                %independent variables column no.
+%out_index = 2;                     %dependent variable column no.
 
 %% subsets partioning
 Xmin = eps; Setslog.Xmin = Xmin;    %normalization range for variables
@@ -64,22 +64,22 @@ Setslog.subset_size = subset_size;
 
 %%
 
-Setslog.generations = 120;  % 10 max generations for evolution
-Setslog.nonodes = 4;       %maximum number of hidden nodes
-Setslog.noinnodes = length(Setslog.in_index);
-Setslog.nooutnodes = length(Setslog.out_index);
-Setslog.maxrank = 10;       %maxrank retained at KillInterval
-Setslog.KillInterval = 11;  %Interval at which bad preys are eliminated
-Setslog.Prey_popsize = 200;        %500 Initial popsize
-Setslog.no_Prey_preferred = 190;   %500 Desired popsize
-Setslog.no_new_Prey = 150;          % 500 new prey introduced every KillInterval
-Setslog.Predator_popsize = 75;     %Number of Predators
-Setslog.no_x = 70;                  %latticesize (no of rows)
-Setslog.no_y = 70;                  %lattice size (no of cols)
-Setslog.ploton = 1;                 %set 0 for no plots or 1 for plots at every generation
+Setslog.generations = 120;                      %Maximum number generations for evolution
+Setslog.nonodes = 4;                            %maximum number of hidden nodes
+Setslog.noinnodes = length(Setslog.in_index);   %Number of input nodes as given in PP_NNGA_automate
+Setslog.nooutnodes = length(Setslog.out_index); %Number of output nodes as given in PP_NNGA_automate
+Setslog.maxrank = 10;                           %maxrank retained at KillInterval
+Setslog.KillInterval = 11;                      %Interval at which bad preys are eliminated
+Setslog.Prey_popsize = 200;                     %Initial prey population size
+Setslog.no_Prey_preferred = 190;                %Desired prey population size
+Setslog.no_new_Prey = 150;                      %Number of new prey introduced every KillInterval
+Setslog.Predator_popsize = 75;                  %Number of Predators
+Setslog.no_x = 70;                              %lattice size (no of rows)
+Setslog.no_y = 70;                              %lattice size (no of cols)
+Setslog.ploton = 1;                             %set 0 for no plots or 1 for plots at every generation
 Setslog.filename = Data;
 Setslog.FolderName = FolderName;
-%======================================================================
+%========================Plotting the output===============================
 if Setslog.ploton
     figure_handle = [figure(1) figure(2) figure(3) figure(4)]; 
     scrsz = get(0,'ScreenSize');
@@ -90,7 +90,7 @@ if Setslog.ploton
     pause(0.1)
 end
 
-%scale the data
+%========================Scaling the data==================================
 DataSet_sc = [];
 for i=1:length(DataSet(1,:))
     Data_min(1,i) = min(DataSet(:,i));
@@ -102,9 +102,9 @@ Setslog.Data_min = Data_min;
 Setslog.Data_max = Data_max;
 
 eval(['delete Setslog' num2str(Setslog.nonodes) '-' num2str(Setslog.out_index) '_' Data])
-%============================================
+%==========================================================================
 
-%choose datasets for training
+%========================Choose datasets for training======================
 
 if subsets == 1
     training_subsets = 1;
@@ -114,9 +114,9 @@ else
     no_run = 1+subsets; Setslog.no_run = no_run;
 end
 Setslog.chosen_training_sets = training_subsets;
-%============================================
+%==========================================================================
 
-%creating training data
+%========================Creating training data============================
 data_index = (1:1:length(DataSet))';
 for i = 1:no_run
     chosen_data_index = [];
@@ -136,9 +136,9 @@ for i = 1:no_run
     Setslog.dataset(i).in = Setslog.DataSet_sc(chosen_data_index,in_index);
     Setslog.dataset(i).out = Setslog.DataSet_sc(chosen_data_index,out_index);
 end
-%====================================
+%==========================================================================
 
-%train neural nets on each dataset
+%========================Train neural nets on each dataset=================
 for i = 1:no_run
     if i < no_run
         fprintf('\nTraining Dataset %d\n\n', i);
@@ -150,7 +150,8 @@ for i = 1:no_run
 end
 fprintf('\n\nTrainining Subsets\n');
 disp(training_subsets);
-%====================================
+%==========================================================================
+
 file = sprintf('%sTrained_%s-%s_%s',char(FolderName),num2str(Setslog.nonodes),num2str(Setslog.out_index),filename);
 save(file,'Setslog');
 
